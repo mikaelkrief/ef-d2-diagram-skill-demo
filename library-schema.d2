@@ -1,0 +1,146 @@
+direction: right
+
+# ============================================================
+# Library Database Schema — LibraryDbContext
+# Generated from EF Core entities & Fluent API configurations
+# Layout: elk  |  Columns: key-only  |  Grouping: bounded-context
+# Hidden technical tables: AuditLog
+# ============================================================
+
+Catalogue: {
+  label: "Catalogue"
+  style.fill: "#f0f4ff"
+  style.stroke: "#4a6cf7"
+
+  Category: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+    ParentCategoryId: "int?" {constraint: foreign_key}
+  }
+
+  Book: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+    CategoryId: int {constraint: foreign_key}
+  }
+
+  Author: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+  }
+
+  BookAuthor: {
+    shape: sql_table
+    BookId: int {constraint: [primary_key; foreign_key]}
+    AuthorId: int {constraint: [primary_key; foreign_key]}
+    style.stroke-dash: 5
+  }
+
+  Copy: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+    BookId: int {constraint: foreign_key}
+  }
+}
+
+Members: {
+  label: "Members"
+  style.fill: "#f0fff4"
+  style.stroke: "#38a169"
+
+  MemberType: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+  }
+
+  Member: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+    MemberTypeId: int {constraint: foreign_key}
+  }
+
+  Subscription: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+    MemberId: int {constraint: foreign_key}
+  }
+}
+
+Loans: {
+  label: "Loans"
+  style.fill: "#fffaf0"
+  style.stroke: "#dd6b20"
+
+  Loan: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+    CopyId: int {constraint: foreign_key}
+    MemberId: int {constraint: foreign_key}
+  }
+
+  Reservation: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+    BookId: int {constraint: foreign_key}
+    MemberId: int {constraint: foreign_key}
+  }
+
+  Fine: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+    LoanId: int {constraint: foreign_key}
+  }
+}
+
+Administration: {
+  label: "Administration"
+  style.fill: "#fff5f5"
+  style.stroke: "#e53e3e"
+
+  Role: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+  }
+
+  Staff: {
+    shape: sql_table
+    Id: int {constraint: primary_key}
+    RoleId: int {constraint: foreign_key}
+  }
+}
+
+# ============================================================
+# Relationships — Catalogue (intra)
+# ============================================================
+
+Catalogue.Book.CategoryId -> Catalogue.Category.Id: "N:1 FK_Book_Category (Restrict)"
+Catalogue.BookAuthor.BookId -> Catalogue.Book.Id: "N:1 FK_BookAuthor_Book (Restrict)"
+Catalogue.BookAuthor.AuthorId -> Catalogue.Author.Id: "N:1 FK_BookAuthor_Author (Restrict)"
+Catalogue.Copy.BookId -> Catalogue.Book.Id: "N:1 FK_Copy_Book (Restrict)"
+Catalogue.Category.ParentCategoryId -> Catalogue.Category.Id: "N:1 self-ref (Restrict)" {
+  style.stroke-dash: 5
+}
+
+# ============================================================
+# Relationships — Members (intra)
+# ============================================================
+
+Members.Member.MemberTypeId -> Members.MemberType.Id: "N:1 FK_Member_MemberType (Restrict)"
+Members.Subscription.MemberId -> Members.Member.Id: "N:1 FK_Subscription_Member (Restrict)"
+
+# ============================================================
+# Relationships — Loans (intra)
+# ============================================================
+
+Loans.Fine.LoanId -> Loans.Loan.Id: "1:1 FK_Fine_Loan (Restrict)"
+
+# ============================================================
+# Relationships — Cross-context
+# ============================================================
+
+Loans.Loan.CopyId -> Catalogue.Copy.Id: "N:1 FK_Loan_Copy (Restrict)"
+Loans.Loan.MemberId -> Members.Member.Id: "N:1 FK_Loan_Member (Restrict)"
+Loans.Reservation.BookId -> Catalogue.Book.Id: "N:1 FK_Reservation_Book (Restrict)"
+Loans.Reservation.MemberId -> Members.Member.Id: "N:1 FK_Reservation_Member (Restrict)"
+
+Administration.Staff.RoleId -> Administration.Role.Id: "N:1 FK_Staff_Role (Restrict)"
