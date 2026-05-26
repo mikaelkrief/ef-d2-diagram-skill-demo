@@ -107,44 +107,6 @@ Copilot automatically loads the skill, analyses the source code and produces the
 
 ---
 
-## Bounded Contexts Description
-
-### Catalogue
-
-| Table | Description |
-|---|---|
-| `Category` | Hierarchical categories (self-reference via `ParentCategoryId`) |
-| `Book` | Books linked to a category |
-| `Author` | Authors |
-| `BookAuthor` | Explicit join table Book ↔ Author (N:N) with composite key `(BookId, AuthorId)` |
-| `Copy` | Physical copies of a book |
-
-### Members
-
-| Table | Description |
-|---|---|
-| `MemberType` | Member types (loan quota, duration) |
-| `Member` | Library members with unique email and member number |
-| `Subscription` | Member subscriptions |
-
-### Loans
-
-| Table | Description |
-|---|---|
-| `Loan` | Loans of a copy to a member |
-| `Reservation` | Book reservations by a member |
-| `Fine` | Fines associated with a loan (1:1 relationship) |
-
-### Administration
-
-| Table | Description |
-|---|---|
-| `Role` | Staff roles |
-| `Staff` | Library staff members |
-
-> **Hidden table**: `AuditLog` — technical audit table, hidden by default by the skill.
-
----
 
 ## Regenerating the Diagram
 
